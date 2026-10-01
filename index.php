@@ -9,10 +9,10 @@ $categories = [
 
 $products = [
     [
-    "name" => "Laptop",
-    "price" => 55000,
-    "category" => "Electronics",
-    "images" => "https://placehold.co/600x400?text=Laptop"
+        "name" => "Laptop",
+        "price" => 55000,
+        "category" => "Electronics",
+        "images" => "https://placehold.co/600x400?text=Laptop"
     ],
     [
         "name" => "SmartPhone",
@@ -53,11 +53,11 @@ $products = [
         rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
         crossorigin="anonymous" />
-    <link rel="stylesheet" href="Asets/css/style.css">
+    <link rel="stylesheet" href="asets/css/style.css">
 </head>
 
 <body>
-     <header>
+    <header>
         <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
             <div class="container-fluid">
                 <a class="navbar-brand" href="index.php"><?= $storename ?></a>
@@ -93,12 +93,145 @@ $products = [
         </nav>
     </header>
     <main>
-        <div class="container">
-            <h1 class="text-center">Welcome to our <?=  $storename ?></h1>
-        </div>
+        <section class="hero">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-7">
+                        <h1>
+                            Shop Smart, Shop Better
+                        </h1>
+                        <p class="lead mt-3">
+                            Discover quality products at great price.
+                        </p>
+                        <a href="#products" class="btn btn-light btn-lg mt-3">
+                            Shop Now
+                        </a>
+                    </div>
+                    <div class="col-md-5 text-center">
+                        <div class="display-1">
+                            🛒
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+        <section class="py-5">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <h2>Shop by category</h2>
+                    <p class="text-muted">Explore our popular categories</p>
+                </div>
+                <div class="row" g-4>
+                    <?php foreach ($categories as $category): ?>
+                        <div class="col-md-3">
+                            <div class="card category-card shadow-md">
+                                <div class="card-body text-center">
+                                    <div class="display-5">
+                                        🛍
+                                    </div>
+                                    <h5 class="mt-3">
+                                        <?= $category ?>
+                                    </h5>
+                                    <a href="#" class="btn btn-outline-primary">View Products</a>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </section>
+        <section class="py-5 bg-light" id="products">
+            <div class="container">
+                <div class="text-center">
+                    <h2>Featured Products</h2>
+                    <p class="text-muted">
+                        Check out our popular products
+                    </p>
+                </div>
+                <div class="row g-4">
+                    <?php foreach ($products as $product): ?>
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card produc-card h-100 shadow-sm">
+                                <img src="<?= $product['images'] ?>"
+                                    class="card-img-top product-image"
+                                    alt="<?= $product['name'] ?>">
+                                <div class="card-body">
+                                    <span class="badge bg-secondary">
+                                        <?= $product['category'] ?>
+                                    </span>
+                                    <h5 class="card-title mt-2">
+                                        <?= $product['name'] ?>
+                                    </h5>
+                                    <h5 class="text-primary">
+                                        ₹<?= $product['price'] ?>
+                                    </h5>
+                                    <a href="#" class="btn btn-primary w-100">
+                                        Add to Cart
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+
+        </section>
+        <section class="offer-section">
+            <div class="container text-center">
+                <h2>Special Offer 🎉</h2>
+                <p class="lead">
+                    Get upto 30% off on selected products
+                </p>
+                <a href="#products" class="btn btn-warning btn-lg">
+                    Explore Offers
+                </a>
+            </div>
+
+        </section>
     </main>
     <footer>
-        <!-- place footer here -->
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><?= $storename ?></h5>
+                    <p>
+                        Your trusted online shopping destination
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li>
+                            <a href="index.php" class="text-white">Home</a>
+                        </li>
+                        <li>
+                            <a href="#products" class="text-white">Products</a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-white">Contact</a>
+                        </li>
+
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contact</h5>
+                    <p>Email: support@onlinestore.com</p>
+                    <p>Phone: +91 98765 43210</p>
+
+                </div>
+            </div>
+            <hr>
+            <div class=" text-center">
+                <p class="mb-0">
+                    &copy; <?= date("Y") ?> <?= $storename ?>.
+                    All Rights Reserved.
+                </p>
+            </div>
+
+
+        </div>
     </footer>
     <!-- Bootstrap JavaScript Bundle (includes Popper) -->
     <script

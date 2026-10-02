@@ -9,24 +9,28 @@ $categories = [
 
 $products = [
     [
+        "id" => 1,
         "name" => "Laptop",
         "price" => 55000,
         "category" => "Electronics",
         "images" => "https://placehold.co/600x400?text=Laptop"
     ],
     [
+        "id" => 2,
         "name" => "SmartPhone",
         "price" => 25000,
         "category" => "Electronics",
         "images" => "https://placehold.co/600x400?text=SmartPhone"
     ],
     [
+        "id" => 3,
         "name" => "Headphones",
         "price" => 2999,
         "category" => "Accessories",
         "images" => "https://placehold.co/600x400?text=Headphones"
     ],
     [
+        "id" => 4,
         "name" => "Smart Watch",
         "price" => 4999,
         "category" => "Accessories",
@@ -65,6 +69,11 @@ $products = [
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <form class="d-flex me-3" id="searchForm">
+                        <input class="form-control me-2" type="search" id="searchInput" placeholder="Search Products" aria-label="Search" />
+                        <button class="btn btn-outline-light" type="submit">Search</button>
+                        <button class="btn btn-secondary mx-2" type="button" id="clearSearch">Clear</button>
+                    </form>
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" href="#">Home</a>
@@ -76,18 +85,20 @@ $products = [
                             <a class="nav-link" href="#">Categories</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Login</a>
+                            <a class="nav-link" href="login.php">Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">🛒 Cart</a>
+                            <a class="nav-link" href="card.php">
+                                🛒 Cart
+                                <span class="badge bg-danger" id="cartCount">
+                                    0
+                                </span>
+                            </a>
                         </li>
 
 
                     </ul>
-                    <form class="d-flex" role="search">
-                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-                        <button class="btn btn-outline-success" type="submit">Search</button>
-                    </form>
+                    
                 </div>
             </div>
         </nav>
@@ -151,7 +162,10 @@ $products = [
                 </div>
                 <div class="row g-4">
                     <?php foreach ($products as $product): ?>
-                        <div class="col-md-6 col-lg-3">
+                        <div class="col-md-6 col-lg-3 product-item"
+                        data-name = "<?= strtolower($product['name']) ?>"
+                        data-category = "<?= strtolower($product['category']) ?>"
+                        >
                             <div class="card produc-card h-100 shadow-sm">
                                 <img src="<?= $product['images'] ?>"
                                     class="card-img-top product-image"
@@ -166,9 +180,10 @@ $products = [
                                     <h5 class="text-primary">
                                         ₹<?= $product['price'] ?>
                                     </h5>
-                                    <a href="#" class="btn btn-primary w-100">
-                                        Add to Cart
-                                    </a>
+                                    <button type="button" class="btn btn-primary w-100 add-to-cart"
+                                    data-product-id = "<?= $product['id'] ?>">
+                                    Add to Cart
+                                    </button>
                                 </div>
                             </div>
 
@@ -238,6 +253,7 @@ $products = [
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
+        <script src="asets/js/script.js"></script>
 </body>
 
 </html>

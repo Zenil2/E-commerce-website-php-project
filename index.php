@@ -95,8 +95,6 @@ $products = [
                                 </span>
                             </a>
                         </li>
-
-
                     </ul>
                     
                 </div>
@@ -180,7 +178,8 @@ $products = [
                                     <h5 class="text-primary">
                                         ₹<?= $product['price'] ?>
                                     </h5>
-                                    <button type="button" class="btn btn-primary w-100 add-to-cart"
+                                    <button type="button" 
+                                    class="btn btn-primary w-100 add-to-cart"
                                     data-product-id = "<?= $product['id'] ?>">
                                     Add to Cart
                                     </button>

@@ -11,9 +11,11 @@ let cartCount = 0;
 
     const clearSearch = document.getElementById("clearSearch");
 
+
     
     addToCartButtons.forEach(function(button) {
-        button.addEventListener("click", function () {
+        button.addEventListener("click", function() {
+            button.textContent = "Added ✔️";
             cartCount ++;
             cartCounter.textContent = cartCount;
             alert("Product added to cart!");
@@ -47,3 +49,5 @@ let cartCount = 0;
             product.style.display = "";
         })
     })
+
+    /*  */

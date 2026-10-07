@@ -1,4 +1,5 @@
 <?php
+require_once './includes/function.php';
 $storename = "Online E-commerce Website";
 $categories = [
     "Electonics",
@@ -13,28 +14,32 @@ $products = [
         "name" => "Laptop",
         "price" => 55000,
         "category" => "Electronics",
-        "images" => "https://placehold.co/600x400?text=Laptop"
+        "images" => "https://placehold.co/600x400?text=Laptop",
+        "stock" => 12
     ],
     [
         "id" => 2,
         "name" => "SmartPhone",
         "price" => 25000,
         "category" => "Electronics",
-        "images" => "https://placehold.co/600x400?text=SmartPhone"
+        "images" => "https://placehold.co/600x400?text=SmartPhone",
+        "stock" => 2
     ],
     [
         "id" => 3,
         "name" => "Headphones",
         "price" => 2999,
         "category" => "Accessories",
-        "images" => "https://placehold.co/600x400?text=Headphones"
+        "images" => "https://placehold.co/600x400?text=Headphones",
+        "stock" => 10
     ],
     [
         "id" => 4,
         "name" => "Smart Watch",
         "price" => 4999,
         "category" => "Accessories",
-        "images" => "https://placehold.co/600x400?text=Smart+Watch"
+        "images" => "https://placehold.co/600x400?text=Smart+Watch",
+        "stock" => 0
     ],
 ];
 ?>
@@ -176,13 +181,23 @@ $products = [
                                         <?= $product['name'] ?>
                                     </h5>
                                     <h5 class="text-primary">
-                                        ₹<?= $product['price'] ?>
+                                        <?= formatPrice($product['price']) ?>
                                     </h5>
+                                    <?php if(isProductAvailable($product['stock'])):?>
+
                                     <button type="button" 
                                     class="btn btn-primary w-100 add-to-cart"
                                     data-product-id = "<?= $product['id'] ?>">
                                     Add to Cart
                                     </button>
+                                    <?php else: ?>
+                                        <button type="button" 
+                                    class="btn btn-secondary w-100 add-to-cart"
+                                    data-product-id = "<?= $product['id'] ?>" disabled>
+                                    Out of Stock
+                                    </button>
+                                    <?php endif; ?>
+
                                 </div>
                             </div>
 

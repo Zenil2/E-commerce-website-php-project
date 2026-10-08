@@ -15,7 +15,8 @@ $products = [
         "price" => 55000,
         "category" => "Electronics",
         "images" => "https://placehold.co/600x400?text=Laptop",
-        "stock" => 12
+        "stock" => 12,
+        "discount" =>10,
     ],
     [
         "id" => 2,
@@ -23,7 +24,9 @@ $products = [
         "price" => 25000,
         "category" => "Electronics",
         "images" => "https://placehold.co/600x400?text=SmartPhone",
-        "stock" => 2
+        "stock" => 5,
+        "discount" =>10,
+
     ],
     [
         "id" => 3,
@@ -31,7 +34,9 @@ $products = [
         "price" => 2999,
         "category" => "Accessories",
         "images" => "https://placehold.co/600x400?text=Headphones",
-        "stock" => 10
+        "stock" => 10,
+        "discount" =>10,
+
     ],
     [
         "id" => 4,
@@ -39,8 +44,22 @@ $products = [
         "price" => 4999,
         "category" => "Accessories",
         "images" => "https://placehold.co/600x400?text=Smart+Watch",
-        "stock" => 0
+        "stock" => 0,
+        "discount" =>10,
+
     ],
+    [
+        "id" =>5,
+        "name" =>"Tablet",
+        "price" => 15999,
+        "category" => "Electronics",
+        "images" => "https://placehold.co/600x400?text=Tablet",
+        "stock"=> 20,
+        "discount" =>10,
+
+
+    ],
+    
 ];
 ?>
 
@@ -181,16 +200,28 @@ $products = [
                                         <?= $product['name'] ?>
                                     </h5>
                                     <h5 class="text-primary">
-                                        <?= formatPrice($product['price']) ?>
+                                        <p>Original Price:
+                                        <del>
+                                            <?= formatPrice($product['price']) ?>
+                                        </del>
+                                        </p>
+                                        <p class="text-success">Discount Price 
+                                        <strong>
+                                            <?=  formatPrice(calculateDiscount($product['price'],$product['discount'])) ?>
+                                        </strong>
+                                        </p>
                                     </h5>
                                     <?php if(isProductAvailable($product['stock'])):?>
-
+                                        <p class="text-success">
+                                            In Stock
+                                        </p>
                                     <button type="button" 
                                     class="btn btn-primary w-100 add-to-cart"
                                     data-product-id = "<?= $product['id'] ?>">
                                     Add to Cart
                                     </button>
                                     <?php else: ?>
+                                        <p class="text-danger">Out of Stock</p>
                                         <button type="button" 
                                     class="btn btn-secondary w-100 add-to-cart"
                                     data-product-id = "<?= $product['id'] ?>" disabled>

@@ -2,7 +2,7 @@
 require_once './includes/function.php';
 $storename = "Online E-commerce Website";
 $categories = [
-    "Electonics",
+    "Electronics",
     "Accessories",
     "Clothing",
     "Books"
@@ -31,7 +31,7 @@ $products = [
     [
         "id" => 3,
         "name" => "Headphones",
-        "price" => 2999,
+        "price" => 3999,
         "category" => "Accessories",
         "images" => "https://placehold.co/600x400?text=Headphones",
         "stock" => 10,
@@ -41,7 +41,7 @@ $products = [
     [
         "id" => 4,
         "name" => "Smart Watch",
-        "price" => 4999,
+        "price" => 5000,
         "category" => "Accessories",
         "images" => "https://placehold.co/600x400?text=Smart+Watch",
         "stock" => 0,

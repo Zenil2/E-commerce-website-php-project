@@ -3,7 +3,7 @@
     function calculateTotal(float $price, float $quatinty): float{
         return $price * $quatinty;
     }
-    function calculateDiscount(float $price, float $discountParent): float{
+    function calculateDiscountedPrice(float $price, float $discountParent): float{
         $discount = ($price * $discountParent) / 100;
         return $price - $discount;
     }

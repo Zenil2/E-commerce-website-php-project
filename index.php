@@ -207,7 +207,7 @@ $products = [
                                         </p>
                                         <p class="text-success">Discount Price 
                                         <strong>
-                                            <?=  formatPrice(calculateDiscount($product['price'],$product['discount'])) ?>
+                                            <?=  formatPrice(calculateDiscountedprice($product['price'],$product['discount'])) ?>
                                         </strong>
                                         </p>
                                     </h5>

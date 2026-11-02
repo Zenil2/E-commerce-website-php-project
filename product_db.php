@@ -43,6 +43,16 @@
                             <?php while ($row = mysqli_fetch_assoc($result)): ?>
                                 <div class="col-md-6 col-lg-3">
                                     <div class="card h-100 shadow-sm">
+
+                                    <?php
+                                        $imagePath = !empty($row['image']) && file_exists(__DIR__.'/uploads/products' .$row['image']) ? 'upload/products/'.$row['image'] : 'asets/images/no.image.png';
+
+                                    ?>
+                                    <img src="<?= e($imagePath) ?>"
+                                    alt="<?= e($row['name']) ?>"
+                                    class="card-img-top"
+                                    style="height: 220px; object-fit: contain;">
+                                
                                         <div class="card-body">
                                             <span class="badge bg-secondary">
                                                <!-- Category ID: <?= $row['category_id'] ?> -->

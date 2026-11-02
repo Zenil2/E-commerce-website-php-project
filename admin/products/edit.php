@@ -1,5 +1,6 @@
 <?php 
     require_once __DIR__ . '/../../config/database.php';
+    require_once __DIR__ . '/../../includes/function.php';
 
     function e(mixed $value){
         return htmlspecialchars(
@@ -56,7 +57,7 @@
         $price = $_POST['price'] ??'';
         $discount = $_POST['discount'] ??'';
         $stock = $_POST['stock'] ??'';
-        $image = trim($_POST['image'] ??'');
+        $image = $product['image'] ?? '';
         $status = $_POST['status'] ??'';
     
 
@@ -93,14 +94,31 @@
         if (strlen($description) > 5000) {
             $errors[] = "Description is too long.";
         }
-        if (strlen($image) > 250) {
-            $errors[] = "Image filename is too long.";
-        }
+        
         if (!in_array($status,['0','1'],true)) {
             $errors[] = "Select a valid product status.";
         }
+        $oldImage = $product['image'] ?? '';
+        $newImage = null;
 
         if (!$errors) {
+            $price = (float)$price;
+            $discount = (float)$discount;
+            $stock = (int)$stock;
+            $categoryId = (int)$categoryId;
+            $status= (float)$status;
+            $id = (int)$id;
+
+            $upload = uploadProductImage($_FILES['image'] ?? []);
+            
+            if($upload['error'] !== null){
+                $errors[] = $upload['error'];
+
+            }else if($upload['filename'] !== null){
+                $newImage = $upload['filename'];
+                $image = $newImage;
+            }
+
             $update = "
             UPDATE products
             SET category_id = ?,name= ?,description = ?,price =?, discount = ?,stock = ?,image = ?, status =? 
@@ -111,15 +129,34 @@
                 die("Unable to prepare product update.");
             }
 
-            mysqli_stmt_bind_param($stmt, "issddisii",$categoryId,$name,$description,$price,$discount,$stock,$image,$status,$id);
+            mysqli_stmt_bind_param($stmt,
+             "issddisii",
+             $categoryId,
+             $name,
+             $description,
+             $price,
+             $discount,
+             $stock,
+             $image,
+             $status,
+             $id
+             );
 
             if (mysqli_stmt_execute($stmt)) {
                 mysqli_stmt_close($stmt);
-                header("Location: index.php?success=upload");
+                if($newImage !== null && $oldImage !== '' && $oldImage !== $newImage){
+                    $oldPath = __DIR__.'/../../uploads/products'.$oldImage;
+                    if(is_file($oldPath)){
+                        unlink($oldPath);
+                    }
+                }
+                header("Location: index.php?success=updated");
                 exit;
+            }else{
+                $errors[] = "Update failed: " . mysqli_stmt_error($stmt);
+
             }
-            $errors[] = "Unalbe to update the product.";
-            mysqli_stmt_close($stmt);
+            
         }
     }
 
@@ -159,7 +196,7 @@
 
                         </div>
                         <?php endif; ?>
-                        <form method="post">
+                        <form method="post" enctype="multipart/form-data">
                             <div class="mb-3">
                                 <label class="form-label">Product Name</label>
                                 <input type="text" name="name" class="form-control" maxlength="150" value="<?= e($name) ?>" required >
@@ -194,10 +231,28 @@
                                     <input type="number" name="stock" min="0" step="1" value="<?= e($stock) ?>" class="form-control" required>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-8 mb-3">
-                                    <label class="form-label">Image Filename</label>
-                                    <input type="text" name="image" maxlength="255" value="<?= e($image) ?>" class="form-control">
+                            
+                                <div class="mb-3">
+                                    <label  for="image" class="form-label">Replace product image</label>
+
+                                    <?php if(!empty($product['image'])): ?>
+                                        <div class="mb-2">
+                                            <img src="../../uploads/products/<?= e($product['image']) ?>"
+                                             alt="Current product image"
+                                             style="width: 120px; height: 120px; object-fit: contain;"
+                                             class="img-thumbnail">
+                                        </div>
+                                    <?php endif; ?>
+                                    <input type="file"
+                                     name="image"
+                                     id="image"
+                                     class="form-control"
+                                     accept="image/jpeg,image/png,image/webp">
+                                     <div class="form-text">
+                                        Leave empty to keep the existing image.
+                                        JPG, PNG, or Webp only: maximum 2 MB.
+
+                                     </div>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label class="form-label">Status</label>
@@ -207,7 +262,6 @@
                                     </select>
 
                                 </div>
-                            </div>
                             <button class="btn btn-primary" type="submit">Update Product</button>
                             <a href="index.php" class="btn btn-outline-secondary">Cancel</a>
                         </form>             

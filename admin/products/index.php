@@ -9,6 +9,7 @@ $sql = "
         p.discount,
         p.stock,
         p.status,
+        p.image,
         c.name as category_name
         FROM products AS p
         INNER JOIN category AS c
@@ -18,9 +19,8 @@ $sql = "
 
 try {
     $result = mysqli_query($conn, $sql);
-
 } catch (Exception $e) {
-    die("Unable to fetch products" . $e->getMessage());
+    die("Unable to fetch products:" . $e->getMessage());
 }
 
 function e(mixed $value): string
@@ -54,18 +54,37 @@ function e(mixed $value): string
     <div class="container py-5">
         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
             <div>
-                    <h1 class="h2">
-                        Product Management
-                    </h1>
-                    <p class="text-muted mb-0">
+                <h1 class="h2">
+                    Product Management
+                </h1>
+                <p class="text-muted mb-0">
                     Manage your store inventory.
-                    </p>
+                </p>
             </div>
             <a href="add.php" class="btn btn-primary">
                 + Add Product
             </a>
-            
+
+
         </div>
+        <?php if (($_GET['success'] ?? '') === 'created'): ?>
+            <div class="alert alert-success my-4">
+                Product created successfully!
+            </div>
+        <?php elseif (($_GET['success'] ?? '') === 'updated'): ?>
+            <div class="alert alert-success my-4">
+                Product updated successfully!
+            </div>
+        <?php elseif (($_GET['success'] ?? '') === 'deleted'): ?>
+            <div class="alert alert-success my-4"x>
+                Product deleted successfully!
+            </div>
+        <?php elseif (($_GET['error'] ?? '') === 'not_found'): ?>
+            <div class="alert alert-warning my-4">
+                Product not found or already deleted!
+            </div>
+        <?php endif; ?>
+
         <div class="card shadow-sm">
             <div class="card-body">
                 <div class="table-responsive">
@@ -79,55 +98,68 @@ function e(mixed $value): string
                                 <th>Discount</th>
                                 <th>Stock</th>
                                 <th>Status</th>
+                                <th>Image</th>
                                 <th>Action</th>
-                                
+
                             </tr>
 
                         </thead>
                         <tbody>
-                            <?php 
-                                if(mysqli_num_rows($result) > 0):
+                            <?php
+                            if (mysqli_num_rows($result) > 0):
                             ?>
-                            <?php while ($row = mysqli_fetch_assoc($result)): ?>
-                                <tr>
-                                    <td><?= e($row['id']) ?></td>
-                                    <td><?= e($row['name']) ?></td>
-                                    <td><?= e($row['category_name']) ?></td>
-                                    <td>₹<?= number_format((float)$row['price'],2) ?></td>
-                                    <td><?= e($row['discount']) ?>%</td>
-                                    <td><?= e($row['stock']) ?></td>
-                                    <td>
-                                        <?php if($row['status'] == 1):?>
-                                    <span class="badge text-bg-success">
-                                        Active
-                                    </span>
-                                    <?php else: ?>
-                                        <span class="badge text-bg-secondary">
-                                            Inactive
-                                        </span>
-                                        <?php endif ?>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex gap-2">
-                                            <a href="edit.php?id=<?= (int)$row['id'] ?>" class="btn btn-sm btn-warning">
-                                                Edit
-                                            </a>
-                                            <form action="delete.php"
-                                            method="post"
-                                            onsubmit="return confirm('Delete this product?');">
-                                            <input type="hidden" name="id" value="<?= (int)$row['id'] ?>">
-                                            <button type="submit" class="btn btn-sm btn-danger">Delete
-                                            </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <?php endwhile; ?>
-                                <?php else: ?>
+                                <?php while ($row = mysqli_fetch_assoc($result)): ?>
                                     <tr>
-                                        <td colspan="8" class="text-center py-4">No product found</td>
+                                        <td><?= e($row['id']) ?></td>
+                                        <td><?= e($row['name']) ?></td>
+                                        <td><?= e($row['category_name']) ?></td>
+                                        <td>₹<?= number_format((float)$row['price'], 2) ?></td>
+                                        <td><?= e($row['discount']) ?>%</td>
+                                        <td><?= e($row['stock']) ?></td>
+                                        <td>
+                                            <?php if ($row['status'] == 1): ?>
+                                                <span class="badge text-bg-success">
+                                                    Active
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="badge text-bg-secondary">
+                                                    Inactive
+                                                </span>
+                                            <?php endif ?>
+                                        </td>
+                                        <td>
+                                            <?php if (!empty($row['image'])): ?>
+                                                <img src="../../uploads/products/<?= e($row['image']) ?>"
+                                                    alt="<?= e($row['name']) ?>"
+                                                    width="60"
+                                                    height="60"
+                                                    style="object-fit: contain;"
+                                                    class="img-thumbnail">
+                                            <?php else: ?>
+                                                <span class="text-muted">No Image</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex gap-2">
+                                                <a href="edit.php?id=<?= (int)$row['id'] ?>" class="btn btn-sm btn-warning">
+                                                    Edit
+                                                </a>
+                                                <form action="delete.php"
+                                                    method="post"
+                                                    onsubmit="return confirm('Delete this product?');">
+                                                    <input type="hidden" name="id" value="<?= (int)$row['id'] ?>">
+                                                    <button type="submit" class="btn btn-sm btn-danger">Delete
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
                                     </tr>
-                                <?php endif; ?>
+                                <?php endwhile; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="8" class="text-center py-4">No product found</td>
+                                </tr>
+                            <?php endif; ?>
                         </tbody>
 
                     </table>
@@ -139,28 +171,8 @@ function e(mixed $value): string
         <a href="../../index.php" class="btn btn-outline-secondary mt-3">
             Back to store
         </a>
-        <?php if(($_GET['success']??'') ==='created'): ?>
-                <div class="alert alert-success my-4">
-                    Product created successfully!
-                </div>
-                <?php elseif (($_GET['success']?? '') === 'updated'): ?>
-                    <div class="alert alert-success my-4">
-                        Product updated successfully!
-                    </div>
-                 <?php elseif (($_GET['success']?? '') === 'deleted'): ?>
-                    <div class="alert alert-success my-4">
-                        Product deleted successfully!
-                    </div>
-                <?php elseif (($_GET['error']?? '') === 'not_found'): ?>
-                    <div class="alert alert-warning my-4">
-                        Product not found or already deleted!
-                    </div>
-                    <?php endif; ?>
-
-
-
     </div>
-    
+
     <script
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"

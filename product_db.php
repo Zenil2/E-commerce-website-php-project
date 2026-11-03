@@ -1,116 +1,204 @@
 <?php
-    require_once './config/database.php';
-    require_once './includes/function.php';
 
-    $sql = "SELECT
-            products.* , 
-            category.name AS category_name
-                FROM products
-            INNER JOIN category
-                ON products.category_id = category.id
-        ";    
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
 
-    $result = mysqli_query($conn,$sql);
-    if(!$result){
-    die("Unable to fetch record:".mysqli_error($conn));
-    }
+require_once './config/database.php';
+require_once './includes/function.php';
 
-    ?>
+// Fetch products with their category names
+$sql = "
+    SELECT
+        p.*,
+        c.name AS category_name
+    FROM products AS p
+    LEFT JOIN category AS c
+        ON p.category_id = c.id
+    ORDER BY p.id DESC
+";
 
-    <!doctype html>
-    <html lang="en" data-bs-theme="light">
-        <head>
-            <title>Products</title>
-            <!-- Required meta tags -->
-            <meta charset="utf-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1" />
-    
-            
-            <link
-                href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-                rel="stylesheet"
-                integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
-                crossorigin="anonymous"
-            />
-        </head>
-    
-        <body>
-            <header>
-                <main>
-                    <div class="container py-4">
-                        <h1 class="mb-4">Products</h1>
-                        <div class="row g-4">
-                            <?php while ($row = mysqli_fetch_assoc($result)): ?>
-                                <div class="col-md-6 col-lg-3">
-                                    <div class="card h-100 shadow-sm">
+$result = mysqli_query($conn, $sql);
 
-                                    <?php
-                                        $imagePath = !empty($row['image']) && file_exists(__DIR__.'/uploads/products' .$row['image']) ? 'upload/products/'.$row['image'] : 'asets/images/no.image.png';
+if (!$result) {
+    die("Product query failed: " . mysqli_error($conn));
+}
 
-                                    ?>
-                                    <img src="<?= e($imagePath) ?>"
-                                    alt="<?= e($row['name']) ?>"
-                                    class="card-img-top"
-                                    style="height: 220px; object-fit: contain;">
-                                
-                                        <div class="card-body">
-                                            <span class="badge bg-secondary">
-                                               <!-- Category ID: <?= $row['category_id'] ?> -->
-                                                <?= $row['category_name'] ?>
-                                            </span>
-                                            <h5 class="card-title mt-3">
-                                                <?=  $row['name'] ?>
+$totalProducts = mysqli_num_rows($result);
 
-                                            </h5>
-                                            <p class="card-text">
-                                                <?= $row['description'] ?>
-                                            </p>
-                                            <h5 class="text-primary">
-                                                <?= number_format($row['price'],2) ?>
-                                            </h5>
-                                            <p>Stock: <?= $row['stock'] ?></p>
+// Helper for safe HTML output
+function output($value) {
+    return htmlspecialchars(
+        (string)($value ?? ''),
+        ENT_QUOTES,
+        'UTF-8'
+    );
+}
 
-                                            <?php          
-                                            $finalprice = calculateDiscountedPrice($row['price'],$row['discount']);
+?>
 
-                                            ?>
-                                            <p>
-                                                <del>
-                                                    ₹<?= number_format($row['price'],2) ?>
-                                                </del>
-                                            </p>
-                                            <h5 class="text-primary">
-                                                ₹<?= number_format($finalprice,2) ?>
+<!doctype html>
+<html lang="en">
 
-                                            </h5>
-                                            <span class="badge bg-danger">
-                                                <?= $row['discount'] ?>% OFF
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-                                            </span>
-                                            <p>Stock: <?= $row['stock'] ?></p>
-                                            <button class="btn btn-primary w-100">
-                                                Add to cart
-                                            </button>
-                                        </div>
-                                    </div>
+    <title>Our Products | Online Store</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .product-image {
+            height: 220px;
+            width: 100%;
+            object-fit: contain;
+            padding: 12px;
+            background: #ffffff;
+        }
+
+        .product-card {
+            transition: transform 0.2s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-description {
+            min-height: 48px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="container py-5">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Our Products</h1>
+
+            <span class="badge bg-primary fs-6">
+                <?= $totalProducts ?> Products
+            </span>
+        </div>
+
+        <?php if ($totalProducts > 0): ?>
+
+            <div class="row g-4">
+
+                <?php while ($row = mysqli_fetch_assoc($result)): ?>
+
+                    <?php
+
+                    $imageFilename = basename($row['image'] ?? '');
+
+                    $imageFile = __DIR__ . '/uploads/products/' . $imageFilename;
+
+                    $imageUrl = !empty($imageFilename) && is_file($imageFile)
+                        ? 'uploads/products/' . rawurlencode($imageFilename)
+                        : null;
+
+                    $finalPrice = calculateDiscountedPrice(
+                        (float)$row['price'],
+                        (float)$row['discount']
+                    );
+
+                    ?>
+
+                    <div class="col-12 col-sm-6 col-lg-3">
+
+                        <div class="card product-card h-100 shadow-sm">
+
+                            <?php if ($imageUrl): ?>
+
+                                <img
+                                    src="<?= output($imageUrl) ?>"
+                                    class="card-img-top product-image"
+                                    alt="<?= output($row['name']) ?>"
+                                >
+
+                            <?php else: ?>
+
+                                <div class="product-image d-flex justify-content-center align-items-center">
+                                    <span class="text-muted">
+                                        No Image Available
+                                    </span>
                                 </div>
-                                <?php endwhile ?>
+
+                            <?php endif; ?>
+
+                            <div class="card-body d-flex flex-column">
+
+                                <span class="badge bg-secondary align-self-start">
+                                    <?= output($row['category_name'] ?? 'Uncategorized') ?>
+                                </span>
+
+                                <h5 class="card-title mt-3">
+                                    <?= output($row['name']) ?>
+                                </h5>
+
+                                <p class="card-text product-description">
+                                    <?= output($row['description']) ?>
+                                </p>
+
+                                <p class="mb-1">
+                                    <del class="text-muted">
+                                        ₹<?= number_format((float)$row['price'], 2) ?>
+                                    </del>
+                                </p>
+
+                                <h5 class="text-primary">
+                                    ₹<?= number_format((float)$finalPrice, 2) ?>
+                                </h5>
+
+                                <span class="badge bg-danger align-self-start mb-3">
+                                    <?= (int)$row['discount'] ?>% OFF
+                                </span>
+
+                                <p>
+                                    Stock: <?= (int)$row['stock'] ?>
+                                </p>
+
+                                <button
+                                    type="button"
+                                    class="btn btn-primary w-100 mt-auto"
+                                >
+                                    Add to Cart
+                                </button>
+
+                            </div>
+
                         </div>
 
                     </div>
-                </main>
-            </header>
-            <main></main>
-            <footer>
-                <!-- place footer here -->
-            </footer>
-            <!-- Bootstrap JavaScript Bundle (includes Popper) -->
-            <script
-                src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-                integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-                crossorigin="anonymous"
-            ></script>
-        </body>
-    </html>
-    
-    
+
+                <?php endwhile; ?>
+
+            </div>
+
+        <?php else: ?>
+
+            <div class="alert alert-warning text-center">
+                <h4>No Products Found</h4>
+                <p class="mb-0">
+                    Please add products through the admin panel.
+                </p>
+            </div>
+
+        <?php endif; ?>
+
+    </main>
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+</body>
+</html>

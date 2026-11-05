@@ -26,7 +26,7 @@ if (!$result) {
 $totalProducts = mysqli_num_rows($result);
 
 // Helper for safe HTML output
-function output($value) {
+function e($value) {
     return htmlspecialchars(
         (string)($value ?? ''),
         ENT_QUOTES,
@@ -119,9 +119,9 @@ function output($value) {
                             <?php if ($imageUrl): ?>
 
                                 <img
-                                    src="<?= output($imageUrl) ?>"
+                                    src="<?= e($imageUrl) ?>"
                                     class="card-img-top product-image"
-                                    alt="<?= output($row['name']) ?>"
+                                    alt="<?= e($row['name']) ?>"
                                 >
 
                             <?php else: ?>
@@ -137,15 +137,15 @@ function output($value) {
                             <div class="card-body d-flex flex-column">
 
                                 <span class="badge bg-secondary align-self-start">
-                                    <?= output($row['category_name'] ?? 'Uncategorized') ?>
+                                    <?= e($row['category_name'] ?? 'Uncategorized') ?>
                                 </span>
 
                                 <h5 class="card-title mt-3">
-                                    <?= output($row['name']) ?>
+                                    <?= e($row['name']) ?>
                                 </h5>
 
                                 <p class="card-text product-description">
-                                    <?= output($row['description']) ?>
+                                    <?= e($row['description']) ?>
                                 </p>
 
                                 <p class="mb-1">
@@ -166,12 +166,10 @@ function output($value) {
                                     Stock: <?= (int)$row['stock'] ?>
                                 </p>
 
-                                <button
-                                    type="button"
-                                    class="btn btn-primary w-100 mt-auto"
-                                >
-                                    Add to Cart
-                                </button>
+                                    <a href="product_details.php?id=<?= (int)$row['id'] ?>"
+                                    class="btn btn-primary w-100">
+                                    View Details
+                                    </a>
 
                             </div>
 
